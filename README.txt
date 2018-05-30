@@ -1,0 +1,1 @@
+Para correr el archivo la clase principal se llama segmentacion.m

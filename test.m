@@ -1,0 +1,47 @@
+clear all; clc; close all;
+img= imread('tip.jpg');
+H= fspecial('unsharp');
+[nombreTip,numTip]= separaTip(img);
+numTipOCR = ocrNumeroTip(numTip);
+img= imfilter(nombreTip,H);
+edgeThreshold = 0.4;
+amount = 0.2;
+numTip = localcontrast(numTip, edgeThreshold, amount);
+nombreTip=localcontrast(nombreTip,edgeThreshold,amount);
+figure();imshow(nombreTip);
+[a1,a2,a3,a4,a5]= componentsTest(nombreTip);
+figure();imshow([a1;a2;a3]);
+figure();imshow([a4;a5]);
+k= component(a4,1);
+a4= component(a1,1);
+k= k- a4;
+figure();imshow(k);impixelinfo;
+a4(a4<75)=0;
+a4(a4>74)=255;
+figure();imshow(a4);impixelinfo;
+a5=bwareaopen(a4,300);
+a5=im2uint8(a5);
+a4=a4-a5;
+a4=bwareaopen(a4,20);
+
+figure();imshow(a5);
+se = strel('square',1);
+a4=imopen(a4,se);
+figure();imshow(a4);impixelinfo;
+ b=a4';
+ c=sum(b);
+ figure(); plot(c);
+index=find(c>10);
+[tamx,tamy]=size(index);
+inicio=index(1);
+final=index(tamy);
+intermedio=index(floor(tamy/2));
+tipNombreImg=a4(inicio:intermedio-1,:,:);
+tipApellidoImg=a4(intermedio:final,:,:);
+figure();imshow(tipNombreImg);
+figure();imshow(tipApellidoImg)
+nombreOcr= ocr(a4);
+nombreOcr= nombreOcr.Text;
+% se = strel('square',1);
+% a3=imopen(a3,se);
+% ocr(a3)
